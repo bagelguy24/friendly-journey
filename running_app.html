@@ -420,7 +420,15 @@
 
         const date = dateInput.value;
         const distance = Number(distanceInput.value);
-        const duration = Number(durationInput.value);
+
+        const hours = Number(hoursInput.value);
+        const minutes = Number(minutesInput.value);
+        const seconds = Number(secondsInput.value);
+        
+        const duration =
+            hours * 60 +
+            minutes +
+            seconds / 60;
         const weather = weatherInput.value;
 
 
