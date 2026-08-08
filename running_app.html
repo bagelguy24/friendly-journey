@@ -1,0 +1,627 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running Journal</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7f5;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #222;
+        }
+
+        /* 기록 입력 영역 */
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input,
+        select {
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .add-btn {
+            margin-top: 5px;
+            padding: 12px;
+            border: none;
+            border-radius: 7px;
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background: #218838;
+        }
+
+        /* 성장 분석 */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .stat {
+            background: #f4f7f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 7px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        /* 러닝 기록 */
+        .run-list {
+            list-style: none;
+            margin-top: 25px;
+        }
+
+        .run-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .run-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .run-date {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .delete-btn {
+            border: none;
+            background: #dc3545;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #b52a37;
+        }
+
+        .run-info {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            background: #eef5ef;
+            padding: 6px 9px;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .empty {
+            text-align: center;
+            color: #999;
+            padding: 30px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🏃 Running Journal</h1>
+
+    <!-- 러닝 기록 입력 -->
+    <div class="input-area">
+
+        <div class="input-group">
+            <label for="dateInput">날짜</label>
+            <input type="date" id="dateInput">
+        </div>
+
+        <div class="input-group">
+            <label for="distanceInput">거리 (km)</label>
+            <input
+                type="number"
+                id="distanceInput"
+                placeholder="예: 5"
+                min="0.1"
+                step="0.1"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="durationInput">러닝 시간 (분)</label>
+            <input
+                type="number"
+                id="durationInput"
+                placeholder="예: 30"
+                min="1"
+            >
+        </div>
+
+        <div class="input-group">
+            <label for="weatherInput">날씨</label>
+            <select id="weatherInput">
+                <option value="☀️ 맑음">☀️ 맑음</option>
+                <option value="⛅ 흐림">⛅ 흐림</option>
+                <option value="🌧️ 비">🌧️ 비</option>
+                <option value="❄️ 눈">❄️ 눈</option>
+                <option value="💨 바람">💨 바람</option>
+            </select>
+        </div>
+
+        <button class="add-btn" id="addBtn">
+            러닝 기록 저장
+        </button>
+
+    </div>
+
+
+    <!-- 성장 분석 -->
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-title">총 러닝</div>
+            <div class="stat-value" id="totalRuns">0회</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">총 거리</div>
+            <div class="stat-value" id="totalDistance">0 km</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">총 시간</div>
+            <div class="stat-value" id="totalDuration">0분</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">평균 페이스</div>
+            <div class="stat-value" id="averagePace">-</div>
+        </div>
+
+    </div>
+
+
+    <!-- 러닝 기록 목록 -->
+    <ul class="run-list" id="runList"></ul>
+
+</div>
+
+
+<script>
+
+    // =========================
+    // DOM 요소
+    // =========================
+
+    const dateInput = document.getElementById("dateInput");
+    const distanceInput = document.getElementById("distanceInput");
+    const durationInput = document.getElementById("durationInput");
+    const weatherInput = document.getElementById("weatherInput");
+    const addBtn = document.getElementById("addBtn");
+
+    const runList = document.getElementById("runList");
+
+    const totalRuns = document.getElementById("totalRuns");
+    const totalDistance = document.getElementById("totalDistance");
+    const totalDuration = document.getElementById("totalDuration");
+    const averagePace = document.getElementById("averagePace");
+
+
+    // =========================
+    // 데이터 불러오기
+    // =========================
+
+    let runs = JSON.parse(localStorage.getItem("runningRecords")) || [];
+
+
+    // =========================
+    // 날짜 기본값
+    // =========================
+
+    const today = new Date();
+
+    dateInput.value =
+        `${today.getFullYear()}-` +
+        `${String(today.getMonth() + 1).padStart(2, "0")}-` +
+        `${String(today.getDate()).padStart(2, "0")}`;
+
+
+    // =========================
+    // 데이터 저장
+    // =========================
+
+    function saveRuns() {
+
+        localStorage.setItem(
+            "runningRecords",
+            JSON.stringify(runs)
+        );
+
+    }
+
+
+    // =========================
+    // 페이스 계산
+    // =========================
+
+    function calculatePace(distance, duration) {
+
+        const pace = duration / distance;
+
+        const minutes = Math.floor(pace);
+
+        const seconds = Math.round(
+            (pace - minutes) * 60
+        );
+
+        return `${minutes}:${String(seconds).padStart(2, "0")} /km`;
+
+    }
+
+
+    // =========================
+    // 러닝 기록 추가
+    // =========================
+
+    function addRun() {
+
+        const date = dateInput.value;
+        const distance = Number(distanceInput.value);
+        const duration = Number(durationInput.value);
+        const weather = weatherInput.value;
+
+
+        // 입력 확인
+        if (!date || !distance || !duration) {
+
+            alert("날짜, 거리, 러닝 시간을 입력해주세요.");
+
+            return;
+        }
+
+
+        // 페이스 계산
+        const pace = calculatePace(
+            distance,
+            duration
+        );
+
+
+        // 새로운 러닝 데이터
+        const run = {
+
+            id: Date.now(),
+
+            date: date,
+
+            distance: distance,
+
+            duration: duration,
+
+            pace: pace,
+
+            weather: weather
+
+        };
+
+
+        // 배열에 추가
+        runs.push(run);
+
+
+        // localStorage 저장
+        saveRuns();
+
+
+        // 화면 업데이트
+        renderRuns();
+
+
+        // 입력창 초기화
+        distanceInput.value = "";
+        durationInput.value = "";
+
+        distanceInput.focus();
+
+    }
+
+
+    // =========================
+    // 화면에 러닝 기록 표시
+    // =========================
+
+    function renderRuns() {
+
+        runList.innerHTML = "";
+
+
+        if (runs.length === 0) {
+
+            runList.innerHTML =
+                `<li class="empty">
+                    아직 러닝 기록이 없습니다.
+                </li>`;
+
+            updateStats();
+
+            return;
+        }
+
+
+        // 최신 기록부터 표시
+        const sortedRuns = [...runs].sort(
+            (a, b) =>
+                new Date(b.date) - new Date(a.date)
+        );
+
+
+        sortedRuns.forEach(run => {
+
+            const li = document.createElement("li");
+
+            li.className = "run-item";
+
+
+            const top = document.createElement("div");
+
+            top.className = "run-top";
+
+
+            const date = document.createElement("span");
+
+            date.className = "run-date";
+
+            date.textContent = `🏃 ${run.date}`;
+
+
+            const deleteBtn =
+                document.createElement("button");
+
+            deleteBtn.className = "delete-btn";
+
+            deleteBtn.textContent = "삭제";
+
+
+            deleteBtn.addEventListener("click", () => {
+
+                deleteRun(run.id);
+
+            });
+
+
+            top.appendChild(date);
+
+            top.appendChild(deleteBtn);
+
+
+            const info =
+                document.createElement("div");
+
+            info.className = "run-info";
+
+
+            const distance =
+                document.createElement("span");
+
+            distance.className = "badge";
+
+            distance.textContent =
+                `📏 ${run.distance} km`;
+
+
+            const duration =
+                document.createElement("span");
+
+            duration.className = "badge";
+
+            duration.textContent =
+                `⏱️ ${run.duration}분`;
+
+
+            const pace =
+                document.createElement("span");
+
+            pace.className = "badge";
+
+            pace.textContent =
+                `⚡ ${run.pace}`;
+
+
+            const weather =
+                document.createElement("span");
+
+            weather.className = "badge";
+
+            weather.textContent =
+                run.weather;
+
+
+            info.appendChild(distance);
+
+            info.appendChild(duration);
+
+            info.appendChild(pace);
+
+            info.appendChild(weather);
+
+
+            li.appendChild(top);
+
+            li.appendChild(info);
+
+
+            runList.appendChild(li);
+
+        });
+
+
+        updateStats();
+
+    }
+
+
+    // =========================
+    // 러닝 기록 삭제
+    // =========================
+
+    function deleteRun(id) {
+
+        runs = runs.filter(
+            run => run.id !== id
+        );
+
+
+        saveRuns();
+
+        renderRuns();
+
+    }
+
+
+    // =========================
+    // 성장 분석
+    // =========================
+
+    function updateStats() {
+
+        // 총 러닝 횟수
+        const runCount = runs.length;
+
+
+        // 총 거리
+        const distanceSum = runs.reduce(
+            (sum, run) =>
+                sum + run.distance,
+            0
+        );
+
+
+        // 총 시간
+        const durationSum = runs.reduce(
+            (sum, run) =>
+                sum + run.duration,
+            0
+        );
+
+
+        // 평균 페이스 계산
+        let avgPace = "-";
+
+
+        if (distanceSum > 0) {
+
+            const pace =
+                durationSum / distanceSum;
+
+            const minutes =
+                Math.floor(pace);
+
+            const seconds =
+                Math.round(
+                    (pace - minutes) * 60
+                );
+
+            avgPace =
+                `${minutes}:${String(seconds).padStart(2, "0")} /km`;
+
+        }
+
+
+        totalRuns.textContent =
+            `${runCount}회`;
+
+        totalDistance.textContent =
+            `${distanceSum.toFixed(1)} km`;
+
+        totalDuration.textContent =
+            `${durationSum}분`;
+
+        averagePace.textContent =
+            avgPace;
+
+    }
+
+
+    // =========================
+    // 이벤트
+    // =========================
+
+    addBtn.addEventListener(
+        "click",
+        addRun
+    );
+
+
+    // =========================
+    // 처음 실행할 때 기록 표시
+    // =========================
+
+    renderRuns();
+
+</script>
+
+</body>
+</html>
+```
