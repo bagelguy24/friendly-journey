@@ -121,7 +121,15 @@ function addTodo() {
     const li = document.createElement("li");
 
     const span = document.createElement("span");
-    span.textContent = text;
+
+    const time = new Date();
+  
+    const formattedTime =
+        `${String(time.getHours()).padStart(2, "0")}:` +
+        `${String(time.getMinutes()).padStart(2, "0")}:` +
+        `${String(time.getSeconds()).padStart(2, "0")}`;
+    
+    span.textContent = `${text} ${formattedTime}`;
 
     span.addEventListener("click", () => {
         li.classList.toggle("completed");
