@@ -160,6 +160,40 @@
             color: #999;
             padding: 30px 0;
         }
+
+        .time-picker {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 0;
+            background: #f5f5f7;
+            border-radius: 15px;
+        }
+        
+        .wheel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .time-wheel {
+            width: 75px;
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            background: white;
+            font-size: 20px;
+            text-align: center;
+            text-align-last: center;
+            color: #222;
+        }
+        
+        .wheel-container span {
+            font-size: 12px;
+            color: #777;
+        }
     </style>
 </head>
 
@@ -189,13 +223,29 @@
         </div>
 
         <div class="input-group">
-            <label for="durationInput">러닝 시간 (분)</label>
-            <input
-                type="number"
-                id="durationInput"
-                placeholder="예: 30"
-                min="1"
-            >
+            <label>러닝 시간</label>
+            <div class="time-picker">
+                <div class="wheel-container">
+                    <select id="hoursInput" class="time-wheel">
+                        <!-- JavaScript로 생성 -->
+                    </select>
+                    <span>시간</span>
+                </div>
+        
+                <div class="wheel-container">
+                    <select id="minutesInput" class="time-wheel">
+                        <!-- JavaScript로 생성 -->
+                    </select>
+                    <span>분</span>
+                </div>
+        
+                <div class="wheel-container">
+                    <select id="secondsInput" class="time-wheel">
+                        <!-- JavaScript로 생성 -->
+                    </select>
+                    <span>초</span>
+                </div>
+            </div>
         </div>
 
         <div class="input-group">
@@ -256,7 +306,12 @@
 
     const dateInput = document.getElementById("dateInput");
     const distanceInput = document.getElementById("distanceInput");
-    const durationInput = document.getElementById("durationInput");
+    const hoursInput =
+        document.getElementById("hoursInput");
+    const minutesInput =
+        document.getElementById("minutesInput");
+    const secondsInput =
+        document.getElementById("secondsInput");
     const weatherInput = document.getElementById("weatherInput");
     const addBtn = document.getElementById("addBtn");
 
@@ -266,6 +321,43 @@
     const totalDistance = document.getElementById("totalDistance");
     const totalDuration = document.getElementById("totalDuration");
     const averagePace = document.getElementById("averagePace");
+
+    const hoursInput = document.getElementById("hoursInput");
+    const minutesInput = document.getElementById("minutesInput");
+    const secondsInput = document.getElementById("secondsInput");
+    
+    
+    // 시간: 0 ~ 23
+    for (let i = 0; i <= 23; i++) {
+        const option = document.createElement("option");
+    
+        option.value = i;
+        option.textContent = String(i).padStart(2, "0");
+    
+        hoursInput.appendChild(option);
+    }
+    
+    
+    // 분: 0 ~ 59
+    for (let i = 0; i <= 59; i++) {
+        const option = document.createElement("option");
+    
+        option.value = i;
+        option.textContent = String(i).padStart(2, "0");
+    
+        minutesInput.appendChild(option);
+    }
+    
+    
+    // 초: 0 ~ 59
+    for (let i = 0; i <= 59; i++) {
+        const option = document.createElement("option");
+    
+        option.value = i;
+        option.textContent = String(i).padStart(2, "0");
+    
+        secondsInput.appendChild(option);
+    }
 
 
     // =========================
