@@ -676,6 +676,7 @@
 
 
         updateStats();
+        updateSpeedChart();
 
     }
 
@@ -701,10 +702,14 @@
             run => run.id !== id
         );
 
-
+        // 변경된 기록 저장
         saveRuns();
 
+        // 화면 갱신
         renderRuns();
+
+        // 평균 속도 그래프 갱신
+        updateSpeedChart();
 
     }
 
@@ -952,8 +957,8 @@
     // =========================
 
     renderRuns();
-    updateStats();
-    updateSpeedChart();
+    //updateStats();
+    //updateSpeedChart();
 
 </script>
 
