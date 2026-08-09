@@ -289,6 +289,11 @@
             <div class="stat-value" id="averagePace">-</div>
         </div>
 
+        <div class="stat">
+            <div class="stat-title">평균 속도</div>
+            <div class="stat-value" id="averageSpeed">-</div>
+        </div>
+
     </div>
 
 
@@ -321,6 +326,7 @@
     const totalDistance = document.getElementById("totalDistance");
     const totalDuration = document.getElementById("totalDuration");
     const averagePace = document.getElementById("averagePace");
+    const averageSpeed = document.getElementById("averageSpeed");
     
     // 시간: 0 ~ 23
     for (let i = 0; i <= 23; i++) {
@@ -442,6 +448,9 @@
             duration
         );
 
+        // 속도 계산
+        const speed = distance * 60 / duration;
+
 
         // 새로운 러닝 데이터
         const run = {
@@ -455,6 +464,8 @@
             duration: duration,
 
             pace: pace,
+
+            speed: speed,
 
             weather: weather
 
@@ -581,6 +592,14 @@
             pace.textContent =
                 `⚡ ${run.pace}`;
 
+            const speed =
+                document.createElement("span");
+
+            speed.className = "badge";
+
+            speed.textContent =
+                `🏃 ${Number(run.speed).toFixed(1)} km/h`;
+
 
             const weather =
                 document.createElement("span");
@@ -596,6 +615,8 @@
             info.appendChild(duration);
 
             info.appendChild(pace);
+
+            info.appendChild(speed);
 
             info.appendChild(weather);
 
@@ -662,6 +683,13 @@
         // 평균 페이스 계산
         let avgPace = "-";
 
+        // 평균 속도
+        let avgSpeed = "-";
+
+        if (durationSum > 0) {
+            avgSpeed = `${(distanceSum * 60 / durationSum).toFixed(1)} km/h`;
+        }
+
 
         if (distanceSum > 0) {
 
@@ -693,6 +721,9 @@
 
         averagePace.textContent =
             avgPace;
+
+        averageSpeed.textContent =
+            avgSpeed;
 
     }
 
