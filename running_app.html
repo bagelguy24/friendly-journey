@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Running Journal</title>
@@ -194,6 +195,33 @@
             font-size: 12px;
             color: #777;
         }
+
+        /* 평균 속도 그래프 */
+        .chart-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8faf9;
+            border-radius: 12px;
+        }
+
+        .chart-section h2 {
+            font-size: 18px;
+            color: #222;
+            margin-bottom: 15px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+        }
+
+        .chart-description {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -296,6 +324,19 @@
 
     </div>
 
+    <!-- 평균 속도 변화 그래프 -->
+    <div class="chart-section">
+        <h2>📈 평균 속도 변화</h2>
+
+        <div class="chart-container">
+            <canvas id="speedChart"></canvas>
+        </div>
+
+        <p class="chart-description">
+            러닝 기록이 쌓일수록 평균 속도가 어떻게 변화하는지 확인할 수 있습니다.
+        </p>
+    </div>
+
 
     <!-- 러닝 기록 목록 -->
     <ul class="run-list" id="runList"></ul>
@@ -327,6 +368,9 @@
     const totalDuration = document.getElementById("totalDuration");
     const averagePace = document.getElementById("averagePace");
     const averageSpeed = document.getElementById("averageSpeed");
+
+    // 그래프를 관리할 변수를 하나 만듭니다.
+    let speedChart = null;
     
     // 시간: 0 ~ 23
     for (let i = 0; i <= 23; i++) {
@@ -635,6 +679,17 @@
 
     }
 
+    // =========================
+    // 항상 거리와 시간을 이용해서 다시 계산하도록 만드는 게 안전합니다.
+    // =========================
+    function calculateSpeed(distance, duration) {
+        if (!distance || !duration) {
+            return 0;
+        }
+
+        return (distance * 60) / duration;
+    }
+
 
     // =========================
     // 러닝 기록 삭제
@@ -727,6 +782,160 @@
 
     }
 
+    // =========================
+    // 평균 속도 변화 그래프
+    // =========================
+
+    function updateSpeedChart() {
+
+        const canvas = document.getElementById("speedChart");
+
+        if (!canvas) {
+            return;
+        }
+
+        // 날짜순으로 정렬
+        const sortedRuns = [...runs].sort(
+            (a, b) =>
+                new Date(a.date) - new Date(b.date)
+        );
+
+        // 날짜
+        const labels = sortedRuns.map(
+            run => run.date
+        );
+
+        // 각 러닝의 평균 속도
+        const speedData = sortedRuns.map(
+            run => calculateSpeed(
+                run.distance,
+                run.duration
+            )
+        );
+
+        // 기존 그래프 제거
+        if (speedChart) {
+            speedChart.destroy();
+        }
+
+        // 새로운 그래프 생성
+        speedChart = new Chart(canvas, {
+
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+                        label: "평균 속도",
+
+                        data: speedData,
+
+                        borderColor: "#28a745",
+
+                        backgroundColor:
+                            "rgba(40, 167, 69, 0.12)",
+
+                        borderWidth: 3,
+
+                        pointBackgroundColor:
+                            "#28a745",
+
+                        pointBorderColor:
+                            "#ffffff",
+
+                        pointBorderWidth: 2,
+
+                        pointRadius: 5,
+
+                        pointHoverRadius: 7,
+
+                        fill: true,
+
+                        tension: 0.3
+                    }
+
+                ]
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                interaction: {
+                    intersect: false,
+                    mode: "index"
+                },
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                return ` 평균 속도: ${context.parsed.y.toFixed(1)} km/h`;
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        title: {
+                            display: true,
+                            text: "러닝 날짜"
+                        },
+
+                        grid: {
+                            display: false
+                        }
+
+                    },
+
+                    y: {
+
+                        title: {
+                            display: true,
+                            text: "속도 (km/h)"
+                        },
+
+                        beginAtZero: false,
+
+                        ticks: {
+
+                            callback: function(value) {
+
+                                return value + " km/h";
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        });
+
+    }
+
 
     // =========================
     // 이벤트
@@ -743,6 +952,8 @@
     // =========================
 
     renderRuns();
+    updateStats();
+    updateSpeedChart();
 
 </script>
 
